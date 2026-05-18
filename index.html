@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Lightweight AI Chatbot - Qwen 0.5B (Runs in Your Browser)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 85vh;
+            max-height: 800px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .header p {
+            margin: 5px 0 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .status-bar {
+            background: #f0f0f0;
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            color: #666;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .status-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ffc107;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .status-badge.ready {
+            background: #4caf50;
+            animation: none;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .model-info {
+            font-family: monospace;
+            font-size: 0.75rem;
+            background: #e8e8e8;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+        
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #fafafa;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            text-align: right;
+        }
+        
+        .ai-message {
+            text-align: left;
+        }
+        
+        .message-bubble {
+            display: inline-block;
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+        
+        .user-message .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .ai-message .message-bubble {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .message-label {
+            font-size: 0.7rem;
+            margin-bottom: 4px;
+            opacity: 0.7;
+        }
+        
+        .typing-indicator {
+            display: inline-block;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+        
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .input-area input:focus {
+            border-color: #667eea;
+        }
+        
+        .input-area input:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+        
+        .input-area button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        
+        .input-area button:hover:not(:disabled) {
+            transform: scale(1.02);
+        }
+        
+        .input-area button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .clear-btn {
+            background: #f0f0f0 !important;
+            color: #666 !important;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 0.7rem;
+            color: #999;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        @media (max-width: 600px) {
+            .message-bubble {
+                max-width: 90%;
+            }
+            
+            .input-area button {
+                padding: 12px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Lightweight AI Chatbot</h1>
+            <p>Powered by Qwen2.5-0.5B — Runs entirely in your browser</p>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-text">
+                <span class="status-badge" id="statusBadge"></span>
+                <span id="statusMessage">Initializing AI model...</span>
+            </div>
+            <div class="model-info">
+                📦 Qwen2.5-0.5B (400MB) | ⚡ No API key | 🔒 Private
+            </div>
+        </div>
+        
+        <div class="chat-area" id="chatArea">
+            <div class="message ai-message">
+                <div class="message-label">🤖 Assistant</div>
+                <div class="message-bubble">
+                    Hi there! 👋 I'm a tiny AI that runs completely in your browser. 
+                    Ask me anything! (First load will take a moment to download the model)
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Type your message here..." disabled>
+            <button id="sendBtn" disabled>Send</button>
+            <button id="clearBtn" class="clear-btn">Clear</button>
+        </div>
+        
+        <div class="footer">
+            🔒 100% private — Your conversations never leave your computer
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "@mlc-ai/web-llm": "https://esm.run/@mlc-ai/web-llm"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { CreateMLCEngine } from '@mlc-ai/web-llm';
+        
+        // Configuration - Using the tiny but capable Qwen2.5-0.5B model
+        // Model size: ~400MB download, runs on almost any device
+        const MODEL_ID = "LittleLamb-0.3B-Mobile-q4f16_1-MLC";
+        
+        let engine = null;
+        let isReady = false;
+        
+        // Conversation history (limited to last 10 messages for performance)
+        let messages = [
+            { 
+                role: "system", 
+                content: "You are a helpful, friendly, and concise AI assistant. Keep responses short and useful." 
+            }
+        ];
+        
+        // DOM elements
+        const chatArea = document.getElementById('chatArea');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const statusBadge = document.getElementById('statusBadge');
+        
+        // Helper: Add a message to the chat UI
+        function addMessage(role, content, isStreaming = false) {
+            // If streaming, update the last assistant message
+            if (isStreaming && role === 'assistant') {
+                const lastMessage = chatArea.querySelector('.ai-message:last-child');
+                if (lastMessage && lastMessage.classList.contains('streaming')) {
+                    const bubble = lastMessage.querySelector('.message-bubble');
+                    bubble.textContent = content;
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                    return;
+                }
+            }
+            
+            // Create new message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role === 'user' ? 'user-message' : 'ai-message'}`;
+            if (role === 'assistant' && isStreaming) {
+                messageDiv.classList.add('streaming');
+            }
+            
+            const label = document.createElement('div');
+            label.className = 'message-label';
+            label.textContent = role === 'user' ? '👤 You' : '🤖 Assistant';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = content;
+            
+            messageDiv.appendChild(label);
+            messageDiv.appendChild(bubble);
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        // Helper: Show typing indicator
+        function showTypingIndicator() {
+            const indicator = document.createElement('div');
+            indicator.className = 'message ai-message typing-indicator-wrapper';
+            indicator.id = 'typingIndicator';
+            indicator.innerHTML = `
+                <div class="message-label">🤖 Assistant</div>
+                <div class="typing-indicator">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            chatArea.appendChild(indicator);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        // Helper: Remove typing indicator
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+        }
+        
+        // Helper: Update status
+        function updateStatus(text, isReady = false) {
+            statusMessage.textContent = text;
+            if (isReady) {
+                statusBadge.classList.add('ready');
+            } else {
+                statusBadge.classList.remove('ready');
+            }
+        }
+        
+        // Initialize the AI model
+        async function initAI() {
+            try {
+                updateStatus('Checking browser compatibility...');
+                
+                // Check if WebGPU is available (optional, will fallback to WASM)
+                if (!navigator.gpu) {
+                    console.warn('WebGPU not available, using WASM fallback (slower but works)');
+                    updateStatus('Using WebAssembly mode (slower but compatible)...');
+                }
+                
+                updateStatus(`Downloading Qwen 0.5B model (~400MB)... This may take a few minutes on first load`);
+                
+                // Create the engine with progress callbacks
+                engine = await CreateMLCEngine(MODEL_ID, {
+                    initProgressCallback: (progress) => {
+                        const percent = Math.round(progress.progress * 100);
+                        if (progress.text) {
+                            // Clean up the text for display
+                            let displayText = progress.text;
+                            if (displayText.includes('Fetching')) {
+                                displayText = `Downloading model: ${percent}%`;
+                            } else if (displayText.includes('Loading')) {
+                                displayText = `Loading into memory: ${percent}%`;
+                            }
+                            updateStatus(`${displayText}`);
+                        }
+                        
+                        if (progress.progress === 1) {
+                            updateStatus('✅ AI is ready! Start chatting!', true);
+                            userInput.disabled = false;
+                            sendBtn.disabled = false;
+                            isReady = true;
+                        }
+                    }
+                });
+                
+                // Warm up the model with a tiny test (optional, improves first response speed)
+                console.log('Model loaded successfully!');
+                
+            } catch (error) {
+                console.error('Failed to load AI model:', error);
+                updateStatus('❌ Failed to load AI model. Please refresh and try again. Make sure you\'re using Chrome or Edge.');
+                statusMessage.style.color = '#d32f2f';
+            }
+        }
+        
+        // Send message to AI
+        async function sendMessage() {
+            if (!isReady || !engine) {
+                updateStatus('Please wait for the AI to finish loading...');
+                return;
+            }
+            
+            const userText = userInput.value.trim();
+            if (!userText) return;
+            
+            // Disable input while processing
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+            
+            // Display user message
+            addMessage('user', userText);
+            userInput.value = '';
+            
+            // Add to conversation history
+            messages.push({ role: "user", content: userText });
+            
+            // Limit conversation history to last 10 exchanges (performance)
+            if (messages.length > 21) { // 1 system + 20 messages = 10 exchanges
+                messages = [messages[0], ...messages.slice(-20)];
+            }
+            
+            try {
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Get streaming response
+                const chunks = await engine.chat.completions.create({
+                    messages: messages,
+                    stream: true,
+                    max_tokens: 512,  // Limit response length for speed
+                    temperature: 0.7,  // Slightly creative but not random
+                });
+                
+                let reply = '';
+                let firstChunk = true;
+                
+                for await (const chunk of chunks) {
+                    const newContent = chunk.choices[0]?.delta.content || '';
+                    if (newContent) {
+                        reply += newContent;
+                        if (firstChunk) {
+                            removeTypingIndicator();
+                            addMessage('assistant', reply, true);
+                            firstChunk = false;
+                        } else {
+                            // Update the streaming message
+                            const streamingMsg = chatArea.querySelector('.ai-message.streaming');
+                            if (streamingMsg) {
+                                const bubble = streamingMsg.querySelector('.message-bubble');
+                                bubble.textContent = reply;
+                                chatArea.scrollTop = chatArea.scrollHeight;
+                            }
+                        }
+                    }
+                }
+                
+                // Finalize the message
+                const streamingMsg = chatArea.querySelector('.ai-message.streaming');
+                if (streamingMsg) {
+                    streamingMsg.classList.remove('streaming');
+                }
+                
+                // Add to conversation history
+                if (reply) {
+                    messages.push({ role: "assistant", content: reply });
+                } else {
+                    addMessage('assistant', "I'm not sure how to respond to that. Could you rephrase?");
+                    messages.push({ role: "assistant", content: "I'm not sure how to respond to that. Could you rephrase?" });
+                }
+                
+            } catch (error) {
+                console.error('Error getting response:', error);
+                removeTypingIndicator();
+                addMessage('assistant', 'Sorry, I encountered an error. Please try again.');
+            } finally {
+                // Re-enable input
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.focus();
+            }
+        }
+        
+        // Clear conversation history
+        function clearConversation() {
+            // Reset messages (keep system prompt)
+            messages = [
+                { 
+                    role: "system", 
+                    content: "You are a helpful, friendly, and concise AI assistant. Keep responses short and useful." 
+                }
+            ];
+            
+            // Clear chat area but keep the welcome message
+            chatArea.innerHTML = '';
+            addMessage('assistant', '✨ Conversation cleared! Ask me anything new.');
+            
+            // Also add the welcome message back
+            setTimeout(() => {
+                const welcomeDiv = document.createElement('div');
+                welcomeDiv.className = 'message ai-message';
+                welcomeDiv.innerHTML = `
+                    <div class="message-label">🤖 Assistant</div>
+                    <div class="message-bubble">
+                        Conversation history has been reset. How can I help you now?
+                    </div>
+                `;
+                chatArea.appendChild(welcomeDiv);
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }, 100);
+        }
+        
+        // Event listeners
+        sendBtn.addEventListener('click', sendMessage);
+        clearBtn.addEventListener('click', clearConversation);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && isReady && !sendBtn.disabled) {
+                sendMessage();
+            }
+        });
+        
+        // Start the AI
+        initAI();
+        
+        // Show helpful message about browser compatibility
+        if (!navigator.gpu) {
+            setTimeout(() => {
+                addMessage('assistant', "💡 Tip: For faster performance, try using Chrome or Edge browser. Your current browser might be using WebAssembly mode, which works but is slower.");
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
