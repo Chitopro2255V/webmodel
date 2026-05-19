@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Browser AI Chatbot - GitHub Pages</title>
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>AI Chatbot - Powered by Gemini (Free API)</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -12,7 +11,7 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
             min-height: 100vh;
         }
         .container {
@@ -22,7 +21,7 @@
             overflow: hidden;
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
             color: white;
             padding: 20px;
             text-align: center;
@@ -30,32 +29,28 @@
         .header h1 { margin: 0; font-size: 1.5rem; }
         .header p { margin: 5px 0 0; font-size: 0.85rem; opacity: 0.9; }
         .status-bar {
-            background: #f0f0f0;
+            background: #e8f0fe;
             padding: 10px 20px;
             font-size: 0.85rem;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #ddd;
             display: flex;
             justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
             gap: 8px;
         }
-        .status-text { display: flex; align-items: center; gap: 8px; }
         .status-badge {
+            display: inline-block;
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: #ffc107;
-            animation: pulse 1.5s infinite;
-        }
-        .status-badge.ready { background: #4caf50; animation: none; }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            background: #4caf50;
+            animation: none;
         }
         .model-info {
             font-family: monospace;
             font-size: 0.7rem;
-            background: #e8e8e8;
+            background: #e0e0e0;
             padding: 4px 8px;
             border-radius: 12px;
         }
@@ -81,14 +76,14 @@
             line-height: 1.4;
         }
         .user-message .message-bubble {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
             color: white;
             border-bottom-right-radius: 4px;
         }
         .ai-message .message-bubble {
             background: white;
             color: #333;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #ddd;
             border-bottom-left-radius: 4px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
@@ -99,7 +94,7 @@
             background: white;
             border-radius: 18px;
             border-bottom-left-radius: 4px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #ddd;
         }
         .typing-indicator span {
             display: inline-block;
@@ -119,23 +114,22 @@
         .input-area {
             padding: 20px;
             background: white;
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid #ddd;
             display: flex;
             gap: 12px;
         }
         .input-area input {
             flex: 1;
             padding: 12px 16px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #ddd;
             border-radius: 25px;
             font-size: 1rem;
             outline: none;
         }
-        .input-area input:focus { border-color: #667eea; }
-        .input-area input:disabled { background: #f5f5f5; cursor: not-allowed; }
+        .input-area input:focus { border-color: #1a73e8; }
         .input-area button {
             padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
             color: white;
             border: none;
             border-radius: 25px;
@@ -149,7 +143,7 @@
             text-align: center;
             padding: 10px;
             font-size: 0.7rem;
-            color: #999;
+            color: #666;
             background: white;
             border-top: 1px solid #f0f0f0;
         }
@@ -162,17 +156,17 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🤖 Lightning Fast AI Chatbot</h1>
-            <p>Powered by SmolLM2-360M — Runs entirely in YOUR browser</p>
+            <h1>🤖 Smart AI Chatbot</h1>
+            <p>Powered by Google Gemini 2.5 Flash — Instant responses, no downloads</p>
         </div>
         
         <div class="status-bar">
             <div class="status-text">
-                <span class="status-badge" id="statusBadge"></span>
-                <span id="statusMessage">Initializing...</span>
+                <span class="status-badge"></span>
+                <span id="statusMessage">✅ Ready to chat! (Free Gemini API)</span>
             </div>
             <div class="model-info">
-                📦 ~110MB download | ⚡ Loads in ~15-20 sec | 🔒 100% private
+                ⚡ Gemini 2.5 Flash | 🔒 1,500 free requests/day | 🚀 Instant
             </div>
         </div>
         
@@ -180,44 +174,32 @@
             <div class="message ai-message">
                 <div class="message-label">🤖 Assistant</div>
                 <div class="message-bubble">
-                    Hi there! 👋 I'm a tiny AI that runs completely in your browser.<br><br>
-                    <strong>First time:</strong> The model (~110MB) will download once. Takes ~15-20 seconds.<br>
-                    <strong>After that:</strong> Instant loading! Ask me anything! 🚀
+                    Hi there! 👋 I'm powered by Google's Gemini AI — much smarter than the tiny browser models!<br><br>
+                    Ask me anything about coding, explanations, creative writing, or just chat. I respond instantly! 🚀
                 </div>
             </div>
         </div>
         
         <div class="input-area">
-            <input type="text" id="userInput" placeholder="Type your message here..." disabled>
-            <button id="sendBtn" disabled>Send</button>
+            <input type="text" id="userInput" placeholder="Ask anything... (Try something complex!)">
+            <button id="sendBtn">Send</button>
             <button id="clearBtn" style="background:#f0f0f0;color:#666;">Clear</button>
         </div>
         
         <div class="footer">
-            🔒 Your conversations never leave your computer | Works offline after first load
+            🔒 Powered by Google Gemini API (free tier) | No downloads, instant responses
         </div>
     </div>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "@mlc-ai/web-llm": "https://esm.run/@mlc-ai/web-llm"
-            }
-        }
-    </script>
-
-    <script type="module">
-        import { CreateMLCEngine } from '@mlc-ai/web-llm';
+    <script>
+        // 🔑 PASTE YOUR FREE API KEY HERE
+        // Get it from: https://aistudio.google.com/apikey
+        const API_KEY = 'AIzaSyCnXx-4Gtr07pkM-eAMNRLoi4ovuJKAqfY';  // ← Replace with your actual key!
         
-        // ✅ CONFIRMED WORKING MODEL - Fastest available for WebLLM
-        // ~110MB download, ~376MB VRAM, loads in ~15-20 seconds on 50 Mbps
-        const MODEL_ID = "SmolLM2-360M-Instruct-q4f16_1-MLC";
+        // Using Gemini 2.5 Flash - fast, smart, and free
+        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
         
-        let engine = null;
-        let isReady = false;
-        let messages = [
-            { role: "system", content: "You are a helpful, friendly, and concise AI assistant. Keep responses short and useful." }
-        ];
+        let messages = [];
         
         // DOM elements
         const chatArea = document.getElementById('chatArea');
@@ -225,7 +207,6 @@
         const sendBtn = document.getElementById('sendBtn');
         const clearBtn = document.getElementById('clearBtn');
         const statusMessage = document.getElementById('statusMessage');
-        const statusBadge = document.getElementById('statusBadge');
         
         function addMessage(role, content, isStreaming = false) {
             if (isStreaming && role === 'assistant') {
@@ -273,99 +254,60 @@
             if (indicator) indicator.remove();
         }
         
-        function updateStatus(text, ready = false) {
-            statusMessage.textContent = text;
-            if (ready) statusBadge.classList.add('ready');
-            else statusBadge.classList.remove('ready');
-        }
-        
-        async function initAI() {
-            try {
-                // Check HTTPS requirement
-                if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-                    updateStatus('❌ HTTPS required for WebGPU. GitHub Pages uses HTTPS automatically.');
-                    statusMessage.style.color = '#d32f2f';
-                    return;
-                }
-                
-                updateStatus('📥 Downloading SmolLM2 model (~110MB)... First load takes ~15-20 seconds...');
-                
-                engine = await CreateMLCEngine(MODEL_ID, {
-                    initProgressCallback: (progress) => {
-                        const percent = Math.round(progress.progress * 100);
-                        if (progress.text) {
-                            let displayText = progress.text;
-                            if (displayText.includes('Fetching')) displayText = `Downloading: ${percent}%`;
-                            else if (displayText.includes('Loading')) displayText = `Loading into memory: ${percent}%`;
-                            updateStatus(displayText);
-                        }
-                        if (progress.progress === 1) {
-                            updateStatus('✅ AI Ready! Start chatting!', true);
-                            userInput.disabled = false;
-                            sendBtn.disabled = false;
-                            isReady = true;
-                        }
-                    }
-                });
-                
-            } catch (error) {
-                console.error('Init error:', error);
-                updateStatus(`❌ Error: ${error.message || 'Failed to load model. Refresh and try again.'}`);
-                statusMessage.style.color = '#d32f2f';
-            }
-        }
-        
         async function sendMessage() {
-            if (!isReady || !engine) return;
-            
             const userText = userInput.value.trim();
             if (!userText) return;
+            
+            // Check if API key is configured
+            if (API_KEY === 'AIzaSyCnXx-4Gtr07pkM-eAMNRLoi4ovuJKAqfY') {
+                addMessage('assistant', '⚠️ **API Key Required**\n\nPlease replace `YOUR_GEMINI_API_KEY_HERE` in the code with your free API key from [aistudio.google.com](https://aistudio.google.com/apikey)\n\nIt takes 2 minutes and no credit card!');
+                return;
+            }
             
             addMessage('user', userText);
             userInput.value = '';
             sendBtn.disabled = true;
             
-            messages.push({ role: "user", content: userText });
+            // Add to conversation history (Gemini format)
+            messages.push({ role: "user", parts: [{ text: userText }] });
             
-            if (messages.length > 21) messages = [messages[0], ...messages.slice(-20)];
+            // Keep conversation manageable (last 20 messages)
+            if (messages.length > 20) messages = messages.slice(-20);
             
             try {
                 showTypingIndicator();
                 
-                const chunks = await engine.chat.completions.create({
-                    messages: messages,
-                    stream: true,
-                    max_tokens: 512,
-                    temperature: 0.7,
+                const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: messages,
+                        generationConfig: {
+                            temperature: 0.7,
+                            maxOutputTokens: 1024,
+                        }
+                    })
                 });
                 
-                let reply = '';
-                let firstChunk = true;
+                const data = await response.json();
+                removeTypingIndicator();
                 
-                for await (const chunk of chunks) {
-                    const newContent = chunk.choices[0]?.delta.content || '';
-                    reply += newContent;
-                    if (firstChunk) {
-                        removeTypingIndicator();
-                        addMessage('assistant', reply, true);
-                        firstChunk = false;
+                if (data.error) {
+                    if (data.error.code === 429) {
+                        addMessage('assistant', '⚠️ Rate limit reached. You get 1,500 free requests per day. Try again later or tomorrow!');
                     } else {
-                        const streamingMsg = chatArea.querySelector('.ai-message.streaming');
-                        if (streamingMsg) {
-                            streamingMsg.querySelector('.message-bubble').textContent = reply;
-                            chatArea.scrollTop = chatArea.scrollHeight;
-                        }
+                        addMessage('assistant', `Error: ${data.error.message || 'Something went wrong'}`);
                     }
+                    return;
                 }
                 
-                const streamingMsg = chatArea.querySelector('.ai-message.streaming');
-                if (streamingMsg) streamingMsg.classList.remove('streaming');
-                
-                if (reply) messages.push({ role: "assistant", content: reply });
+                const reply = data.candidates[0].content.parts[0].text;
+                addMessage('assistant', reply);
+                messages.push({ role: "model", parts: [{ text: reply }] });
                 
             } catch (error) {
                 removeTypingIndicator();
-                addMessage('assistant', `Error: ${error.message || 'Something went wrong. Please try again.'}`);
+                addMessage('assistant', `Network error: ${error.message}. Check your internet connection.`);
             } finally {
                 sendBtn.disabled = false;
                 userInput.focus();
@@ -373,7 +315,7 @@
         }
         
         function clearConversation() {
-            messages = [{ role: "system", content: "You are a helpful, friendly, and concise AI assistant. Keep responses short and useful." }];
+            messages = [];
             chatArea.innerHTML = '';
             const welcomeDiv = document.createElement('div');
             welcomeDiv.className = 'message ai-message';
@@ -386,9 +328,14 @@
         
         sendBtn.addEventListener('click', sendMessage);
         clearBtn.addEventListener('click', clearConversation);
-        userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && isReady) sendMessage(); });
+        userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
         
-        initAI();
+        // Check if API key needs to be set
+        if (API_KEY === 'AIzaSyCnXx-4Gtr07pkM-eAMNRLoi4ovuJKAqfY') {
+            setTimeout(() => {
+                addMessage('assistant', '🔑 **Get Your Free API Key**\n\n1. Go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey)\n2. Sign in with Google\n3. Click "Create API Key"\n4. Copy and paste it into the code (replace `YOUR_GEMINI_API_KEY_HERE`)\n\nIt\'s free and takes 2 minutes! 🚀');
+            }, 1000);
+        }
     </script>
 </body>
 </html>
