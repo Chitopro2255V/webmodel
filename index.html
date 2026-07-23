@@ -261,7 +261,7 @@
             if (!userText) return;
             
             // 🛠️ FIX 1: Corrected operator to !== and checking for placeholder
-            if (API_KEY === 'AQ.Ab8RN6Lki1pnU06Nq1SwBGz_fYNC8NPWehTo1LN4xQULVj8A7w') {
+            if (API_KEY !== 'AQ.Ab8RN6Lki1pnU06Nq1SwBGz_fYNC8NPWehTo1LN4xQULVj8A7w') {
                 addMessage('assistant', '⚠️ **API Key Required**\n\nPlease replace the placeholder in the code with your free API key from [aistudio.google.com](https://aistudio.google.com/apikey)');
                 return;
             }
@@ -333,7 +333,7 @@
         userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
         
         // 🛠️ FIX 2: Corrected operator to === for matching placeholder greeting
-        if (API_KEY === 'AQ.Ab8RN6Lki1pnU06Nq1SwBGz_fYNC8NPWehTo1LN4xQULVj8A7w') {
+        if (API_KEY !== 'AQ.Ab8RN6Lki1pnU06Nq1SwBGz_fYNC8NPWehTo1LN4xQULVj8A7w') {
             setTimeout(() => {
                 addMessage('assistant', '🔑 **Get Your Free API Key**\n\n1. Go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey)\n2. Sign in with Google\n3. Click "Create API Key"\n4. Copy and paste it into the code.\n\nIt\'s free and takes 2 minutes! 🚀');
             }, 1000);
