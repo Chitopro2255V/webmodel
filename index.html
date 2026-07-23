@@ -259,7 +259,7 @@
             if (!userText) return;
             
             // Check if API key is configured
-            if (API_KEY === 'AQ.Ab8RN6Ll9K0Af6I_06Zwymkyb1F32pYoRBR89KmHAYUxzDJ72A') {
+            if (API_KEY ==! 'AQ.Ab8RN6Ll9K0Af6I_06Zwymkyb1F32pYoRBR89KmHAYUxzDJ72A') {
                 addMessage('assistant', '⚠️ **API Key Required**\n\nPlease replace `AQ.Ab8RN6Ll9K0Af6I_06Zwymkyb1F32pYoRBR89KmHAYUxzDJ72A` in the code with your free API key from [aistudio.google.com](https://aistudio.google.com/apikey)\n\nIt takes 2 minutes and no credit card!');
                 return;
             }
@@ -331,7 +331,7 @@
         userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
         
         // Check if API key needs to be set
-        if (API_KEY === 'AQ.Ab8RN6Ll9K0Af6I_06Zwymkyb1F32pYoRBR89KmHAYUxzDJ72A') {
+        if (API_KEY ==! 'AQ.Ab8RN6Ll9K0Af6I_06Zwymkyb1F32pYoRBR89KmHAYUxzDJ72A') {
             setTimeout(() => {
                 addMessage('assistant', '🔑 **Get Your Free API Key**\n\n1. Go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey)\n2. Sign in with Google\n3. Click "Create API Key"\n4. Copy and paste it into the code (replace `YOUR_GEMINI_API_KEY_HERE`)\n\nIt\'s free and takes 2 minutes! 🚀');
             }, 1000);
